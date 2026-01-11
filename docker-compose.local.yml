@@ -1,0 +1,26 @@
+# This is the top level Docker Compose file
+
+networks:
+  internal_${PROJECT_NAME:?PROJECT_NAME must be set}:
+    external: false
+
+include:
+  - backend/docker-compose.local.yml
+
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: compose/local/Dockerfile
+    image: accruvi_frontend
+    volumes:
+      - ./frontend:/app # Mount the frontend source code for Hot Reloading
+      - /app/node_modules # Prevent overwriting node_modules from the host
+    ports:
+      - "3000:3000"
+    networks:
+      - internal_${PROJECT_NAME:?PROJECT_NAME must be set}
+    environment:
+      CHOKIDAR_USEPOLLING: "true" # For hot-reloading on Docker for Mac/Windows
+      WATCHPACK_POLLING: "true" # For hot-reloading on Docker for Mac/Windows
+      VITE_HMR_HOST: "localhost" # For Vite HMR on Docker for Mac/Windows
