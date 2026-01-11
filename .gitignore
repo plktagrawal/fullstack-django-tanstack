@@ -1,0 +1,5 @@
+# Parent Level Git Ignore Rules
+.DS_Store
+node_modules/
+.env
+.vscode/
