@@ -1,11 +1,11 @@
+# This is the Docker Compose file for Production environment backend services
+
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
   production_traefik: {}
-  
-  production_redis_data: {}
-  
 
+  production_redis_data: {}
 
 services:
   django: &django
@@ -13,7 +13,12 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
 
-    image: backend_production_django
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_backend:${BACKEND_TAG:?BACKEND_TAG must be set}
+    restart: unless-stopped
+
+    networks:
+      - edge
+      - internal_${PROJECT_NAME:?PROJECT_NAME must be set}
     depends_on:
       - postgres
       - redis
@@ -21,52 +26,54 @@ services:
       - ./.envs/.production/.django
       - ./.envs/.production/.postgres
     command: /start
+    labels:
+      - "traefik.enable=${BACKEND_PUBLIC_INGRESS_ENABLED:-false}"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.rule=Host(`${BACKEND_DOMAIN:-api.${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}}`)"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.entrypoints=websecure"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.tls.certresolver=myresolver"
+
+      # Traefik forwarding to django service on port 8000 inside the container
+      - "traefik.http.services.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.loadbalancer.server.port=8000"
+
+      # Traffic must know which network to use to reach this service in case of multiple networks
+      - "traefik.docker.network=edge"
 
   postgres:
     build:
       context: .
       dockerfile: ./compose/production/postgres/Dockerfile
-    image: backend_production_postgres
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_postgres
+    restart: unless-stopped
+    networks:
+      - internal_${PROJECT_NAME:?PROJECT_NAME must be set}
     volumes:
       - production_postgres_data:/var/lib/postgresql/18/docker
       - production_postgres_data_backups:/backups
     env_file:
       - ./.envs/.production/.postgres
 
-  traefik:
-    build:
-      context: .
-      dockerfile: ./compose/production/traefik/Dockerfile
-    image: backend_production_traefik
-    depends_on:
-      - django
-    volumes:
-      - production_traefik:/etc/traefik/acme
-    ports:
-      - '0.0.0.0:80:80'
-      - '0.0.0.0:443:443'
-      - '0.0.0.0:5555:5555'
-
   redis:
     image: docker.io/redis:7.2
-    
+    restart: unless-stopped
+    networks:
+      - internal_${PROJECT_NAME:?PROJECT_NAME must be set}
+
     volumes:
       - production_redis_data:/data
-    
 
   celeryworker:
     <<: *django
-    image: backend_production_celeryworker
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_celeryworker
     command: /start-celeryworker
 
   celerybeat:
     <<: *django
-    image: backend_production_celerybeat
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_celerybeat
     command: /start-celerybeat
 
   flower:
     <<: *django
-    image: backend_production_flower
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_flower
     command: /start-flower
 
   awscli:

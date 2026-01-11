@@ -1,0 +1,42 @@
+# This is the top level Docker Compose file for Production
+
+networks:
+  # the network for external traffic
+  edge:
+    external: true
+
+  # the internal network for inter-service communication
+  internal_${PROJECT_NAME:?PROJECT_NAME must be set}:
+    external: false
+
+# Backend Services are defined in a separate file
+include:
+  - backend/docker-compose.production.yml
+
+# Define frontend service
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: compose/production/Dockerfile
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_frontend:${FRONTEND_TAG:?FRONTEND_TAG must be set:-latest}
+
+    restart: unless-stopped
+    depends_on:
+      - django
+
+    networks:
+      - edge # allows external traffic via Traefik
+      - internal_${PROJECT_NAME:?PROJECT_NAME must be set} # allows communication with backend
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.rule=Host(`${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}`)"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.entrypoints=websecure"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.tls.certresolver=myresolver"
+
+      # Traefik forwarding to frontend service on port 3000 inside the container
+      - "traefik.http.services.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.loadbalancer.server.port=3000"
+
+      # Traffic must know which network to use to reach this service in case of multiple networks
+      - "traefik.docker.network=edge"
