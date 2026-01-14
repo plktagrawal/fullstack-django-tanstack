@@ -28,7 +28,7 @@ services:
     command: /start
     labels:
       - traefik.enable=${BACKEND_PUBLIC_INGRESS_ENABLED:-false}
-      - traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.rule=Host(`${BACKEND_DOMAIN:-api.${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}}`)
+      - traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.rule=Host(`${BACKEND_DOMAIN:-api.${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}}`) || Host(`www.${BACKEND_DOMAIN:-api.${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}}`)
       - traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.entrypoints=websecure
       - traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.tls.certresolver=letsencrypt
 
