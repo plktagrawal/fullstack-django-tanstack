@@ -31,7 +31,7 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.rule=Host(`${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}`)"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.rule=Host(`${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}`) || Host(`www.${PROJECT_DOMAIN}`)"
       - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.entrypoints=websecure"
       - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.tls.certresolver=letsencrypt"
 
