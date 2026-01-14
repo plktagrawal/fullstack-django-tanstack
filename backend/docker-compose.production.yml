@@ -30,7 +30,7 @@ services:
       - "traefik.enable=${BACKEND_PUBLIC_INGRESS_ENABLED:-false}"
       - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.rule=Host(`${BACKEND_DOMAIN:-api.${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}}`)"
       - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.entrypoints=websecure"
-      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.tls.certresolver=myresolver"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.tls.certresolver=letsencrypt"
 
       # Traefik forwarding to django service on port 8000 inside the container
       - "traefik.http.services.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.loadbalancer.server.port=8000"

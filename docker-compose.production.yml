@@ -33,7 +33,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.rule=Host(`${PROJECT_DOMAIN:?PROJECT_DOMAIN must be set}`)"
       - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.entrypoints=websecure"
-      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.tls.certresolver=letsencrypt"
 
       # Traefik forwarding to frontend service on port 3000 inside the container
       - "traefik.http.services.${PROJECT_NAME:?PROJECT_NAME must be set}-frontend.loadbalancer.server.port=3000"
