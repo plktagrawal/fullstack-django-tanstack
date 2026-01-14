@@ -7,7 +7,7 @@ networks:
 
   # the internal network for inter-service communication
   internal:
-    external: false
+    internal: true
 
 # Backend Services are defined in a separate file
 include:
