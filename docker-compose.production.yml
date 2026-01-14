@@ -6,7 +6,7 @@ networks:
     external: true
 
   # the internal network for inter-service communication
-  internal_${PROJECT_NAME:?PROJECT_NAME must be set}:
+  internal:
     external: false
 
 # Backend Services are defined in a separate file
@@ -27,7 +27,7 @@ services:
 
     networks:
       - edge # allows external traffic via Traefik
-      - internal_${PROJECT_NAME:?PROJECT_NAME must be set} # allows communication with backend
+      - internal # allows communication with backend
 
     labels:
       - "traefik.enable=true"
