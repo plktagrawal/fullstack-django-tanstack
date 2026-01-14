@@ -13,7 +13,7 @@ services:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
 
-    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_backend:${BACKEND_TAG:?BACKEND_TAG must be set}
+    image: ${PROJECT_NAME:?PROJECT_NAME must be set}_django:${BACKEND_TAG:?BACKEND_TAG must be set}
     restart: unless-stopped
 
     networks:
