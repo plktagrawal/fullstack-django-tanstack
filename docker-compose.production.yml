@@ -6,8 +6,9 @@ networks:
     external: true
 
   # the internal network for inter-service communication
-  internal:
-    internal: true
+  default:
+    private:
+      internal: true
 
 # Backend Services are defined in a separate file
 include:
@@ -27,7 +28,6 @@ services:
 
     networks:
       - edge # allows external traffic via Traefik
-      - internal # allows communication with backend
 
     labels:
       - traefik.enable=true

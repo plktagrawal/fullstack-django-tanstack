@@ -18,7 +18,7 @@ services:
 
     networks:
       - edge
-      - internal
+
     depends_on:
       - postgres
       - redis
@@ -44,8 +44,7 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: ${PROJECT_NAME:?PROJECT_NAME must be set}_postgres
     restart: unless-stopped
-    networks:
-      - internal
+
     volumes:
       - production_postgres_data:/var/lib/postgresql
       - production_postgres_data_backups:/backups
@@ -55,9 +54,7 @@ services:
   redis:
     image: docker.io/redis:7.2
     restart: unless-stopped
-    networks:
-      - internal
-
+    
     volumes:
       - production_redis_data:/data
 
