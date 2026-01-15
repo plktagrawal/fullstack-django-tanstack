@@ -1,11 +1,5 @@
 # This is the Docker Compose file for local development of the backend services
 
-networks:
-
-  # Shared private network for backend services
-  private:
-    external: true # because defined in top level compose file
-
 volumes:
   backend_local_postgres_data: {}
   backend_local_postgres_data_backups: {}
@@ -30,8 +24,6 @@ services:
       - ./.envs/.local/.postgres
     ports:
       - '8000:8000'
-    networks:
-      - private
     command: /start
 
   postgres:
@@ -40,8 +32,6 @@ services:
       dockerfile: ./compose/production/postgres/Dockerfile
     image: backend_production_postgres
     container_name: backend_local_postgres
-    networks:
-      - private
     volumes:
       - backend_local_postgres_data:/var/lib/postgresql/18/docker
       - backend_local_postgres_data_backups:/backups
@@ -51,16 +41,12 @@ services:
   mailpit:
     image: docker.io/axllent/mailpit:latest
     container_name: backend_local_mailpit
-    networks:
-      - private
     ports:
       - "8025:8025"
 
   redis:
     image: docker.io/redis:7.2
     container_name: backend_local_redis
-    networks:
-      - private
     volumes:
       - backend_local_redis_data:/data
 
