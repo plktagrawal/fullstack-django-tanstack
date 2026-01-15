@@ -2,8 +2,8 @@
 
 networks:
 
-  # Shared internal network for backend services
-  internal:
+  # Shared private network for backend services
+  private:
     external: true # because defined in top level compose file
 
 volumes:
@@ -31,7 +31,7 @@ services:
     ports:
       - '8000:8000'
     networks:
-      - internal
+      - private
     command: /start
 
   postgres:
@@ -41,7 +41,7 @@ services:
     image: backend_production_postgres
     container_name: backend_local_postgres
     networks:
-      - internal
+      - private
     volumes:
       - backend_local_postgres_data:/var/lib/postgresql/18/docker
       - backend_local_postgres_data_backups:/backups
@@ -52,7 +52,7 @@ services:
     image: docker.io/axllent/mailpit:latest
     container_name: backend_local_mailpit
     networks:
-      - internal
+      - private
     ports:
       - "8025:8025"
 
@@ -60,7 +60,7 @@ services:
     image: docker.io/redis:7.2
     container_name: backend_local_redis
     networks:
-      - internal
+      - private
     volumes:
       - backend_local_redis_data:/data
 
