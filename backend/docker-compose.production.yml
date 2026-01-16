@@ -32,8 +32,8 @@ services:
       - traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.entrypoints=websecure
       - traefik.http.routers.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.tls.certresolver=letsencrypt
 
-      # Traefik forwarding to django service on port 8000 inside the container
-      - traefik.http.services.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.loadbalancer.server.port=8000
+      # Traefik forwarding to django service on port 5000 inside the container
+      - traefik.http.services.${PROJECT_NAME:?PROJECT_NAME must be set}-backend.loadbalancer.server.port=5000
 
       # Traffic must know which network to use to reach this service in case of multiple networks
       - traefik.docker.network=edge
@@ -54,7 +54,7 @@ services:
   redis:
     image: docker.io/redis:7.2
     restart: unless-stopped
-    
+
     volumes:
       - production_redis_data:/data
 
